@@ -11,6 +11,14 @@ import requests
 import numpy
 import csv
 
+def write_out_csv(ratings):
+	"""Write title, reviewers and ratings to a ccsv file in the /data directory"""
+	with open("../data/ratings_data.csv", "wb") as f:
+		writer = csv.writer(f, delimiter = ',')
+		for j in range(len(ratings)):
+		    ratings[j] = map(float, ratings[j])
+		writer.writerows(ratings)
+
 def get_reviewer_ratings(urls, reviewers, ratings):
 	"""Navigate to Metacritic and pull reviewer ratings"""
 
@@ -46,7 +54,6 @@ def get_reviewer_ratings(urls, reviewers, ratings):
 		metaElementLink = tree.xpath(xpath_metacritic)
 		
 		for meta_url in metaElementLink:
-			print meta_url
 		
 			#This cleans up the link
 			chars = set('?')
@@ -57,6 +64,42 @@ def get_reviewer_ratings(urls, reviewers, ratings):
 			meta_url = meta_url + "/critic-reviews"
 
 			metacritic_urls.append(meta_url)
+
+	#Iterate through each Metacritic url to pull reviewers and ratings
+	for iteration in range(len(metacritic_urls)):
+
+		url = metacritic_urls[iteration]
+		page = requests.get(url)
+		tree = html.fromstring(page.content)
+
+		#List of all critic sources for a particular movie
+		xpath_sources = "//span[@class='source']/a"
+		sourceElements = tree.xpath(xpath_sources)
+		print sourceElements
+		number_of_sources = len(sourceElements)
+		print number_of_sources
+
+		"""
+		#List of all critic ratings for a particular movie
+		ratingElements = driver.find_elements_by_css_selector('.metascore_w.large.movie.indiv')
+		n_ratings = len(ratingElements)
+		print number_of_ratings
+		
+		#Check the number of sources match ratings and then add pertinent reviews to list
+		if number_of_sources == number_of_ratings:
+			for reviewer in reviewers:
+				for i in range(len(sourceElements)):
+					if reviewer == sourceElements[i].text:
+						ratings[50*iteration + j].append(ratingElements[i].text.encode('utf-8'))
+						break
+					else:
+						if i == len(sourceElements) - 1:
+							ratings[50*iteration + j].append('-1')
+			write_out_csv(ratings)
+		
+		else:
+			print "ERROR: Sources don't match ratings!!"
+		"""
 
 	print metacritic_urls
 	return ratings
