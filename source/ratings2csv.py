@@ -10,9 +10,22 @@ from lxml import html
 import requests
 import numpy
 import csv
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
-def write_out_csv(ratings):
+def write_out_csv(ratings, titles, reviewers):
 	"""Write title, reviewers and ratings to a ccsv file in the /data directory"""
+	
+	#Add IMDB as the first reviewer
+	['IMDB'] + reviewers
+
+	#Add reviewers as the first row
+	[reviewers] + ratings
+
+	#Add titles to the front of every list of ratings
+	for title in range(len(titles)):
+		titles[title] + ratings[title]
+
 	with open("../data/ratings_data.csv", "wb") as f:
 		writer = csv.writer(f, delimiter = ',')
 		for j in range(len(ratings)):
@@ -65,43 +78,44 @@ def get_reviewer_ratings(urls, reviewers, ratings):
 
 			metacritic_urls.append(meta_url)
 
-	#Iterate through each Metacritic url to pull reviewers and ratings
+	#Iterate through each Metacritic url to pull reviewers' corresponding rating
 	for iteration in range(len(metacritic_urls)):
 
 		url = metacritic_urls[iteration]
-		page = requests.get(url)
-		tree = html.fromstring(page.content)
+		xpath = "//span[@class='source']"
+		#Had to switch to selenium. Trouble scraping - probably related to ToS for CBS
+		driver = webdriver.Chrome()
+		driver.get(url)
 
 		#List of all critic sources for a particular movie
-		xpath_sources = "//span[@class='source']/a"
-		sourceElements = tree.xpath(xpath_sources)
-		print sourceElements
+		sourceElements = driver.find_elements_by_xpath(xpath)
 		number_of_sources = len(sourceElements)
 		print number_of_sources
 
-		"""
 		#List of all critic ratings for a particular movie
 		ratingElements = driver.find_elements_by_css_selector('.metascore_w.large.movie.indiv')
-		n_ratings = len(ratingElements)
+		number_of_ratings = len(ratingElements)
 		print number_of_ratings
 		
-		#Check the number of sources match ratings and then add pertinent reviews to list
+		#Check the number of sources match ratings and then add pertinent reviewer ratings to list
 		if number_of_sources == number_of_ratings:
+			#For each reviewer, iterate through the source elements to find its index
 			for reviewer in reviewers:
 				for i in range(len(sourceElements)):
+					#Once found, append the rating to its spot in the list
 					if reviewer == sourceElements[i].text:
-						ratings[50*iteration + j].append(ratingElements[i].text.encode('utf-8'))
+						ratings[iteration].append(ratingElements[i].text.encode('utf-8'))
 						break
+					#If the reviwer isn't found in the list of sources then place a -1
 					else:
 						if i == len(sourceElements) - 1:
-							ratings[50*iteration + j].append('-1')
-			write_out_csv(ratings)
-		
+							ratings[iteration].append('-1')
 		else:
 			print "ERROR: Sources don't match ratings!!"
-		"""
+		driver.quit()
 
 	print metacritic_urls
+	print ratings
 	return ratings
 
 def get_title_IMDB_ratings(urls, ratings, reviewers):
@@ -122,6 +136,7 @@ def get_title_IMDB_ratings(urls, ratings, reviewers):
 		
 		ratingElements = tree.xpath(xpath_ratings)
 		for element in range(len(ratingElements)):
+			#Each url holds 50 titles
 			ratings[50*i + element].append(ratingElements[element].text.encode('utf-8'))
 
 	print titles, ratings
@@ -134,7 +149,9 @@ def main():
 	urls = (
 		"http://www.imdb.com/search/title?year=2016,2016&title_type=feature&sort=boxoffice_gross_us,desc",
 		"http://www.imdb.com/search/title?year=2015,2015&title_type=feature&sort=boxoffice_gross_us,desc",
-		"http://www.imdb.com/search/title?year=2014,2014&title_type=feature&sort=boxoffice_gross_us,desc"
+		"http://www.imdb.com/search/title?year=2014,2014&title_type=feature&sort=boxoffice_gross_us,desc",
+		"http://www.imdb.com/search/title?year=2013,2013&title_type=feature&sort=boxoffice_gross_us,desc",
+		"http://www.imdb.com/search/title?year=2012,2012&title_type=feature&sort=boxoffice_gross_us,desc"
 		)
 	
 	reviewers = (
@@ -160,6 +177,7 @@ def main():
 	
 	titles, ratings = get_title_IMDB_ratings(urls, ratings, reviewers)
 	ratings = get_reviewer_ratings(urls, reviewers, ratings)
+	write_out_csv(ratings, titles, reviewers)
 
 if __name__ == "__main__":
     main()
