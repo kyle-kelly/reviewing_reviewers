@@ -104,7 +104,7 @@ def get_reviewer_ratings(urls, reviewers, ratings):
 				for i in range(len(sourceElements)):
 					#Once found, append the rating to its spot in the list
 					if reviewer == sourceElements[i].text:
-						ratings[iteration].append(ratingElements[i].text.encode('utf-8'))
+						ratings[iteration].append(ratingElements[i].text.encode('ascii'))
 						break
 					#If the reviwer isn't found in the list of sources then place a -1
 					else:
@@ -137,7 +137,7 @@ def get_title_IMDB_ratings(urls, ratings, reviewers):
 		ratingElements = tree.xpath(xpath_ratings)
 		for element in range(len(ratingElements)):
 			#Each url holds 50 titles
-			ratings[50*i + element].append(ratingElements[element].text.encode('utf-8'))
+			ratings[50*i + element].append(ratingElements[element].text.encode('ascii'))
 
 	print titles, ratings
 	
