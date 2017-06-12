@@ -1,6 +1,6 @@
 #!/usr/local/bin/python
 
-import csv
+import unicodecsv as csv
 
 """Write title, reviewers and ratings to a ccsv file in the /data directory"""
 	
@@ -20,15 +20,17 @@ ratings = [['7.9', '63', '50', '80', '70', '40', '75', '63', '88', '88'], ['7.4'
 titles = ['Rogue One', 'Finding Dory', 'Captain America: Civil War', 'The Secret Life of Pets', 'The Jungle Book', 'Deadpool', 'Zootopia', 'Batman v Superman: Dawn of Justice', 'Suicide Squad', 'Sing', 'Moana', 'Fantastic Beasts and Where to Find Them', 'Doctor Strange', 'Hidden Figures', 'Jason Bourne', 'Star Trek Beyond', 'X-Men: Apocalypse', 'Trolls', 'La La Land', 'Kung Fu Panda 3', 'Split', 'Ghostbusters', 'Central Intelligence', 'The Legend of Tarzan', 'Sully', 'Bad Moms', 'Angry Birds', 'Independence Day: Resurgence', 'The Conjuring 2', 'Arrival', 'Passengers', 'Sausage Party', 'The Magnificent Seven', 'Ride Along 2', "Don't Breathe", "Miss Peregrine's Home for Peculiar Children", 'The Accountant', 'The Purge: Election Year', 'Alice Through the Looking Glass', "Pete's Dragon", 'The Girl on the Train', 'Boo! A Madea Halloween', 'Storks', '10 Cloverfield Lane', 'Lights Out', 'Hacksaw Ridge', 'Allegiant', 'Now You See Me 2', 'Ice Age: Collision Course', 'The Boss', 'Star Wars: Episode VII - The Force Awakens', 'Jurassic World', 'Avengers: Age of Ultron', 'Inside Out', 'Furious 7', 'Minions', 'The Hunger Games: Mockingjay - Part 2', 'The Martian', 'Cinderella', 'Spectre', 'Mission: Impossible - Rogue Nation', 'The Revenant', 'Pitch Perfect 2', 'Ant-Man', 'Home', 'Hotel Transylvania 2', 'Fifty Shades of Grey', 'The SpongeBob Movie: Sponge Out of Water', 'Straight Outta Compton', 'San Andreas', 'Mad Max: Fury Road', "Daddy's Home", 'The Peanuts Movie', 'Insurgent', 'The Good Dinosaur', 'Spy', 'Trainwreck', 'Creed', 'Tomorrowland', 'Get Hard', 'Terminator Genisys', 'Sisters', 'Alvin and the Chipmunks: The Road Chip', 'Maze Runner: The Scorch Trials', 'Ted 2', 'Goosebumps', 'Pixels', 'The Intern', 'Bridge of Spies', 'Paul Blart: Mall Cop 2', 'The Big Short', 'War Room', 'Magic Mike XXL', 'The Visit', 'The Wedding Ringer', 'Black Mass', 'Vacation', 'The Perfect Guy', 'Joy', 'Fantastic Four', 'American Sniper', 'The Hunger Games: Mockingjay - Part 1', 'Guardians of the Galaxy', 'Captain America: The Winter Soldier', 'The Lego Movie', 'The Hobbit: The Battle of the Five Armies', 'Transformers: Age of Extinction', 'Maleficent', 'X-Men: Days of Future Past', 'Big Hero 6', 'Dawn of the Planet of the Apes', 'The Amazing Spider-Man 2', 'Godzilla', '22 Jump Street', 'Teenage Mutant Ninja Turtles', 'Interstellar', 'How to Train Your Dragon 2', 'Gone Girl', 'Divergent', 'Neighbors', 'Ride Along', 'Rio 2', 'Kingsman: The Secret Service', 'Into the Woods', 'Lucy', 'The Fault in Our Stars', 'Unbroken', 'Night at the Museum: Secret of the Tomb', 'Mr. Peabody & Sherman', '300: Rise of an Empire', 'The Maze Runner', 'The Equalizer', 'Noah', 'Edge of Tomorrow', 'Heaven Is for Real', 'Non-Stop', 'The Imitation Game', 'Taken 3', 'Dumb and Dumber To', 'Annie', 'Fury', 'Tammy', 'Annabelle', 'The Other Woman', 'Penguins of Madagascar', "Let's Be Cops", 'The Monuments Men', 'Paddington', 'Hercules', 'The Purge: Anarchy', 'The Hunger Games: Catching Fire', 'Iron Man Three', 'Frozen', 'Despicable Me 2', 'Man of Steel', 'Gravity', 'Monsters University', 'The Hobbit: The Desolation of Smaug', 'Furious 6', 'Oz the Great and Powerful', 'Star Trek Into Darkness', 'Thor: The Dark World', 'World War Z', 'The Croods', 'The Heat', "We're the Millers", 'American Hustle', 'The Great Gatsby', 'The Conjuring', 'Identity Thief', 'Grown Ups 2', 'The Wolverine', 'Lone Survivor', 'G.I. Joe: Retaliation', 'Cloudy with a Chance of Meatballs 2', 'Now You See Me', 'The Wolf of Wall Street', 'The Butler', 'The Hangover Part III', 'Epic', 'Captain Phillips', 'Bad Grandpa', 'Pacific Rim', 'This Is the End', 'Olympus Has Fallen', '42', 'Elysium', 'Planes', 'The Lone Ranger', 'Oblivion', 'Insidious: Chapter 2', 'Saving Mr. Banks', 'Turbo', '2 Guns', 'White House Down', 'Mama', 'Safe Haven', 'The Smurfs 2', 'The Best Man Holiday', 'Percy Jackson: Sea of Monsters', 'The Avengers', 'The Dark Knight Rises', 'The Hunger Games', 'Skyfall', 'The Hobbit: An Unexpected Journey', 'The Twilight Saga: Breaking Dawn - Part 2', 'The Amazing Spider-Man', 'Brave', 'Ted', "Madagascar 3: Europe's Most Wanted", 'The Lorax', 'Wreck-It Ralph', 'Lincoln', 'Men in Black 3', 'Django Unchained', 'Ice Age: Continental Drift', 'Snow White and the Huntsman', u'Les Mis\xe9rables', 'Hotel Transylvania', 'Taken 2', '21 Jump Street', 'Argo', 'Silver Linings Playbook', 'Prometheus', 'Safe House', 'The Vow', 'Life of Pi', 'Magic Mike', 'The Bourne Legacy', 'Journey 2: The Mysterious Island', 'Rise of the Guardians', 'Zero Dark Thirty', 'Flight', 'Think Like a Man', 'The Campaign', 'The Expendables 2', 'Wrath of the Titans', 'Dark Shadows', 'Parental Guidance', 'John Carter', 'Act of Valor', 'This Is 40', 'Contraband', 'Looper', "Madea's Witness Protection", 'Battleship', 'Pitch Perfect', 'Mirror Mirror', 'Chronicle', 'Hope Springs']
 #Add IMDB as the first reviewer
 reviewers.insert(0, 'IMDB')
-print reviewers
+
+#Add header to titles
+titles.insert(0, 'Titles / Reviewers')
 
 #Add reviewers as the first row
 ratings.insert(0, reviewers)
-print ratings
 
 #Add titles to the front of every list of ratings
 for title in range(len(titles)):
 	ratings[title].insert(0, titles[title])
+print ratings
 
 with open("../data/test_ratings_data.csv", "wb") as f:
 	writer = csv.writer(f)

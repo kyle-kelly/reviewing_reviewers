@@ -9,7 +9,7 @@ to the CSV file ratings_data.csv in the /data directory.
 from lxml import html
 import requests
 import numpy
-import csv
+import unicodecsv as csv
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
@@ -17,20 +17,23 @@ def write_out_csv(ratings, titles, reviewers):
 	"""Write title, reviewers and ratings to a ccsv file in the /data directory"""
 	
 	#Add IMDB as the first reviewer
-	['IMDB'] + reviewers
+	reviewers.insert(0, 'IMDB')
+
+	#Add header to titles
+	titles.insert(0, 'Titles / Reviewers')
 
 	#Add reviewers as the first row
-	[reviewers] + ratings
+	ratings.insert(0, reviewers)
 
 	#Add titles to the front of every list of ratings
 	for title in range(len(titles)):
-		titles[title] + ratings[title]
+		ratings[title].insert(0, titles[title])
+	print ratings
 
 	with open("../data/ratings_data.csv", "wb") as f:
-		writer = csv.writer(f, delimiter = ',')
-		for j in range(len(ratings)):
-		    ratings[j] = map(float, ratings[j])
+		writer = csv.writer(f)
 		writer.writerows(ratings)
+
 
 def get_reviewer_ratings(urls, reviewers, ratings):
 	"""Navigate to Metacritic and pull reviewer ratings"""
@@ -104,7 +107,7 @@ def get_reviewer_ratings(urls, reviewers, ratings):
 				for i in range(len(sourceElements)):
 					#Once found, append the rating to its spot in the list
 					if reviewer == sourceElements[i].text:
-						ratings[iteration].append(ratingElements[i].text.encode('ascii'))
+						ratings[iteration].append(ratingElements[i].text.encode('utf8'))
 						break
 					#If the reviwer isn't found in the list of sources then place a -1
 					else:
@@ -115,8 +118,7 @@ def get_reviewer_ratings(urls, reviewers, ratings):
 		driver.quit()
 
 	print metacritic_urls
-	print ratings
-	return ratings
+	return
 
 def get_title_IMDB_ratings(urls, ratings, reviewers):
 	"""Pull title and IMDB ratings"""
@@ -137,11 +139,9 @@ def get_title_IMDB_ratings(urls, ratings, reviewers):
 		ratingElements = tree.xpath(xpath_ratings)
 		for element in range(len(ratingElements)):
 			#Each url holds 50 titles
-			ratings[50*i + element].append(ratingElements[element].text.encode('ascii'))
-
-	print titles, ratings
+			ratings[50*i + element].append(ratingElements[element].text.encode('utf8'))
 	
-	return titles, ratings
+	return titles
 
 
 def main():
@@ -154,7 +154,7 @@ def main():
 		"http://www.imdb.com/search/title?year=2012,2012&title_type=feature&sort=boxoffice_gross_us,desc"
 		)
 	
-	reviewers = (
+	reviewers = [
 		"Washington Post",
 		"The New York Times",
 		"The Telegraph",
@@ -164,7 +164,7 @@ def main():
 		"Boston Globe",
 		"Rolling Stone",
 		"RogerEbert.com"
-		)
+		]
 	
 	titles_per_year = 50
 	n_total_titles = len(urls) * titles_per_year
@@ -175,8 +175,10 @@ def main():
 	
 	titles =[]
 	
-	titles, ratings = get_title_IMDB_ratings(urls, ratings, reviewers)
-	ratings = get_reviewer_ratings(urls, reviewers, ratings)
+	titles = get_title_IMDB_ratings(urls, ratings, reviewers)
+	print titles, ratings
+	get_reviewer_ratings(urls, reviewers, ratings)
+	print ratings
 	write_out_csv(ratings, titles, reviewers)
 
 if __name__ == "__main__":
