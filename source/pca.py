@@ -3,6 +3,29 @@ import numpy
 from matplotlib.mlab import PCA
 
 
+def pca_IMDB_means(centered_IMDB_data):
+	"""Center and mormalize data and then perform SVD"""
+
+	#Create numpy array
+	myData = numpy.array(centered_IMDB_data) 
+	#Normalize
+	myData = myData / myData.std(axis=0)
+	#Perform SVD
+	U, s, Vh = numpy.linalg.svd(myData, full_matrices=False)
+	#The weight vector for projecting a numdims point or array into PCA space.
+	#The factor loadings for the first principal component are given by Wt[0]. 
+	#This row is also the first eigenvector.
+	Wt = Vh
+	#Save the transposed coordinates
+	Y = numpy.dot(Vh, myData.T).T
+	#Save the eigenvalues
+	s = s**2
+	#Contribution of the individual components
+	vars = s/float(len(s))
+	fracs = vars/vars.sum()
+
+	return Wt, fracs
+
 def center_data(data, means):
 	"""Subtract off means from the data and turn missing values (-1) to 0"""
 
@@ -52,42 +75,31 @@ def calculate_title_means(reader, type):
 				means.append(float(row[1])*10)
 		return means
 
-	if type == 'REVIEWER':
-		for row in reader:
-			if HEADER_FLAG == True:
-				HEADER_FLAG = False
-			elif HEADER_FLAG == False:
-				title_rating_sum = 0
-				rating_counter = 0
-				for rating in range(1, len(row)-1):
-					if float(row[rating]) != -1:
-						title_rating_sum += float(row[rating])
-						rating_counter += 1
-				reviewer_title_mean = title_rating_sum / rating_counter
-				means.append(reviewer_title_mean)
-		return means
-
 
 def main():
+
+	numpy.set_printoptions(suppress=True)
 
 	with open("../data/ratings_data.csv", "rb") as csv_file:
 		reader = csv.reader(csv_file)
 
-		IMDB_title_means = calculate_title_means(reader, 'IMDB')
 		csv_file.seek(0)
-		reviewer_title_means = calculate_title_means(reader, 'REVIEWER')
+		IMDB_title_means = calculate_title_means(reader, 'IMDB')
+
 		csv_file.seek(0)
 		data = format_data(reader)
-		
-		centered_IMDB_data = center_data(data, IMDB_title_means)
-		myData = numpy.array(centered_IMDB_data) 
-		results = PCA(myData)
-		print results.fracs
 
-		centered_reviewer_data = center_data(data, reviewer_title_means)
-		myData = numpy.array(centered_reviewer_data) 
+		#Center the data around the IMDB mean
+		centered_IMDB_data = center_data(data, IMDB_title_means)
+		Wt, fracs = pca_IMDB_means(centered_IMDB_data)
+		print "Weight Matrix = ", Wt
+		print "The proportion of variance of each of the principal components = ", fracs
+
+		#This will center and normalize the data before performing the SVD
+		myData = numpy.array(data).astype(numpy.float)
 		results = PCA(myData)
-		print results.fracs
+		print "Weight Matrix = ", results.Wt
+		print "The proportion of variance of each of the principal components = ", results.fracs
 
 
 if __name__ == "__main__":
