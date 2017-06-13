@@ -91,6 +91,7 @@ def main():
 
 		#Center the data around the IMDB mean
 		centered_IMDB_data = center_data(data, IMDB_title_means)
+		#Perform PCA and return weight matrix and fractions of total variance
 		Wt, fracs = pca_IMDB_means(centered_IMDB_data)
 		print "Weight Matrix = ", Wt
 		print "The proportion of variance of each of the principal components = ", fracs

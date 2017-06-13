@@ -2,6 +2,30 @@ import csv
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
+
+def autolabel(rects, ax):
+    # Get y-axis height to calculate label position from.
+    (y_bottom, y_top) = ax.get_ylim()
+    y_height = y_top - y_bottom
+
+    for rect in rects:
+        height = rect.get_height()
+
+        # Fraction of axis height taken up by this rectangle
+        p_height = (height / y_height)
+
+        # If we can fit the label above the column, do that;
+        # otherwise, put it inside the column.
+        if p_height > 0.95: # arbitrary; 95% looked good to me.
+            label_position = height - (y_height * 0.05)
+        else:
+            label_position = height + (y_height * 0.01)
+
+        ax.text(rect.get_x() + rect.get_width()/2., label_position,
+                '%d' % int(height),
+                ha='center', va='bottom')
 
 
 def plot_MSE(reader, mse, figure):
@@ -11,13 +35,20 @@ def plot_MSE(reader, mse, figure):
 		reviewers.pop(0)
 		reviewers.pop(0)
 		break
-	y_pos = np.arange(len(reviewers))
 
-	plt.figure(figure)
-	plt.bar(y_pos, mse, align='center', alpha=0.5)
-	plt.xticks(y_pos, reviewers, rotation=30)
-	plt.ylabel('Mean Squared Error')
-	plt.title('Mean Squared Error per Reviewer')
+	series = pd.Series.from_array(mse)
+
+	# now to plot the figure...
+	plt.figure(figure, figsize=(12, 8))
+	ax = series.plot(kind='bar')
+	ax.set_title("Mean Squared Error per Critic")
+	ax.set_xlabel("Publications")
+	ax.set_ylabel("Mean Squared Error")
+	ax.set_xticklabels(reviewers, rotation=30)
+
+	rects = ax.patches
+
+	autolabel(rects, ax)
 
 	plt.show()
 
