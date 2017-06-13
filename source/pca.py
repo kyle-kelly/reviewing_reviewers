@@ -1,11 +1,42 @@
 import csv
 import numpy
 from matplotlib.mlab import PCA
+import matplotlib.pyplot as plt
+import matplotlib
 
 
-def pca_IMDB_means(centered_IMDB_data):
+def plot_PCA_variance(fracs, figure):
+	"""Scree plot of the """
+
+	cummulative_fracs = []
+	value = 0
+	for variance in fracs:
+		value = value + variance
+		cummulative_fracs.append(value)
+
+	fig = plt.figure(figure, figsize=(8,5))
+	sing_vals = numpy.arange(len(fracs)) + 1
+	plt.bar(sing_vals, fracs, align='center', alpha=0.5)
+	plt.plot(sing_vals, cummulative_fracs, 'ro-', linewidth=2)
+	plt.title('Explained Variance by Different Principal Components')
+	plt.xlabel('Principal Component')
+	plt.ylabel('Explained Variance')
+	#I don't like the default legend so I typically make mine like below, e.g.
+	#with smaller fonts and a bit transparent so I do not cover up data, and make
+	#it moveable by the viewer in case upper-right is a bad place for it 
+	leg = plt.legend(['Cumulative Explained Variance'], loc='best', borderpad=0.3, 
+		         shadow=False, prop=matplotlib.font_manager.FontProperties(size='small'),
+		         markerscale=0.4)
+	leg.get_frame().set_alpha(0.4)
+	leg.draggable(state=True)
+	plt.show()
+
+
+def pca_IMDB_means(data, IMDB_title_means):
 	"""Center and mormalize data and then perform SVD"""
 
+	#Center the data around the IMDB mean
+	centered_IMDB_data = center_data(data, IMDB_title_means)
 	#Create numpy array
 	myData = numpy.array(centered_IMDB_data) 
 	#Normalize
@@ -89,18 +120,18 @@ def main():
 		csv_file.seek(0)
 		data = format_data(reader)
 
-		#Center the data around the IMDB mean
-		centered_IMDB_data = center_data(data, IMDB_title_means)
 		#Perform PCA and return weight matrix and fractions of total variance
-		Wt, fracs = pca_IMDB_means(centered_IMDB_data)
+		Wt, fracs = pca_IMDB_means(data, IMDB_title_means)
 		print "Weight Matrix = ", Wt
 		print "The proportion of variance of each of the principal components = ", fracs
+		plot_PCA_variance(fracs, 1)
 
 		#This will center and normalize the data before performing the SVD
 		myData = numpy.array(data).astype(numpy.float)
 		results = PCA(myData)
 		print "Weight Matrix = ", results.Wt
 		print "The proportion of variance of each of the principal components = ", results.fracs
+		plot_PCA_variance(results.fracs, 2)
 
 
 if __name__ == "__main__":
