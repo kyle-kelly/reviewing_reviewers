@@ -12,6 +12,7 @@ import numpy
 import unicodecsv as csv
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import time
 
 def write_out_csv(ratings, titles, reviewers):
 	"""Write title, reviewers and ratings to a ccsv file in the /data directory"""
@@ -89,6 +90,7 @@ def get_reviewer_ratings(urls, reviewers, ratings):
 		#Had to switch to selenium. Trouble scraping - probably related to ToS for CBS
 		driver = webdriver.Chrome()
 		driver.get(url)
+		time.sleep(3)
 
 		#List of all critic sources for a particular movie
 		sourceElements = driver.find_elements_by_xpath(xpath)
@@ -157,13 +159,16 @@ def main():
 	reviewers = [
 		"Washington Post",
 		"The New York Times",
-		"The Telegraph",
+		"New York Post",
 		"Los Angeles Times",
 		"Wall Street Journal",
 		"Chicago Tribune",
 		"Boston Globe",
 		"Rolling Stone",
-		"RogerEbert.com"
+		"RogerEbert.com",
+		"USA Today",
+		"Entertainment Weekly",
+		"The A.V. Club"
 		]
 	
 	titles_per_year = 50

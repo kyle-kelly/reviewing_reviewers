@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_MSE(reader, mse):
+def plot_MSE(reader, mse, figure):
 	
 	for row in reader:
 		reviewers = row
@@ -13,10 +13,11 @@ def plot_MSE(reader, mse):
 		break
 	y_pos = np.arange(len(reviewers))
 
+	plt.figure(figure)
 	plt.bar(y_pos, mse, align='center', alpha=0.5)
-	plt.xticks(y_pos, reviewers)
+	plt.xticks(y_pos, reviewers, rotation=30)
 	plt.ylabel('Mean Squared Error')
-	plt.title('Mean Squared Error by Reviewer')
+	plt.title('Mean Squared Error per Reviewer')
 
 	plt.show()
 
@@ -146,9 +147,9 @@ def main():
 		print "MSE Reviewer Means = ", mse_reviewer
 
 		csv_file.seek(0)
-		plot_MSE(reader, mse_IMDB)
+		plot_MSE(reader, mse_IMDB, 1)
 		csv_file.seek(0)
-		plot_MSE(reader, mse_reviewer)
+		plot_MSE(reader, mse_reviewer, 2)
 
 if __name__ == "__main__":
     main()
