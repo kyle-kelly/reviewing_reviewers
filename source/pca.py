@@ -6,7 +6,7 @@ import matplotlib
 
 
 def plot_PCA_variance(fracs, figure):
-	"""Scree plot of the """
+	"""Scree plot of the fractions of variance explained by each principal component"""
 
 	cummulative_fracs = []
 	value = 0
@@ -21,9 +21,7 @@ def plot_PCA_variance(fracs, figure):
 	plt.title('Explained Variance by Different Principal Components')
 	plt.xlabel('Principal Component')
 	plt.ylabel('Explained Variance')
-	#I don't like the default legend so I typically make mine like below, e.g.
-	#with smaller fonts and a bit transparent so I do not cover up data, and make
-	#it moveable by the viewer in case upper-right is a bad place for it 
+
 	leg = plt.legend(['Cumulative Explained Variance'], loc='best', borderpad=0.3, 
 		         shadow=False, prop=matplotlib.font_manager.FontProperties(size='small'),
 		         markerscale=0.4)
@@ -122,14 +120,14 @@ def main():
 
 		#Perform PCA and return weight matrix and fractions of total variance
 		Wt, fracs = pca_IMDB_means(data, IMDB_title_means)
-		print "Weight Matrix = ", Wt
+		print "Loadings for the first principal component = ", Wt[0]
 		print "The proportion of variance of each of the principal components = ", fracs
 		plot_PCA_variance(fracs, 1)
 
 		#This will center and normalize the data before performing the SVD
 		myData = numpy.array(data).astype(numpy.float)
 		results = PCA(myData)
-		print "Weight Matrix = ", results.Wt
+		print "Loadings for the first principal component = ", results.Wt[0]
 		print "The proportion of variance of each of the principal components = ", results.fracs
 		plot_PCA_variance(results.fracs, 2)
 
