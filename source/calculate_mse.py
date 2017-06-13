@@ -1,5 +1,24 @@
 import csv
 import math
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def plot_MSE(reader, mse):
+	
+	for row in reader:
+		reviewers = row
+		reviewers.pop(0)
+		reviewers.pop(0)
+		break
+	y_pos = np.arange(len(reviewers))
+
+	plt.bar(y_pos, mse, align='center', alpha=0.5)
+	plt.xticks(y_pos, reviewers)
+	plt.ylabel('Mean Squared Error')
+	plt.title('Mean Squared Error by Reviewer')
+
+	plt.show()
 
 
 def calculate_mse(sse, total_number_of_reviews_per_reviewer):
@@ -32,7 +51,7 @@ def calculate_sse(reader, means, total_number_of_reviewers):
 					error = float(row[reviewer+2]) - means[0]
 					squared_error = error**2
 					sse[reviewer] += squared_error
-			means.pop()
+			means.pop(0)
 
 	return sse
 
@@ -125,6 +144,11 @@ def main():
 		print "MSE IMDB Means =", mse_IMDB
 		mse_reviewer = calculate_mse(sse_reviewer, total_number_of_reviews_per_reviewer)
 		print "MSE Reviewer Means = ", mse_reviewer
+
+		csv_file.seek(0)
+		plot_MSE(reader, mse_IMDB)
+		csv_file.seek(0)
+		plot_MSE(reader, mse_reviewer)
 
 if __name__ == "__main__":
     main()
