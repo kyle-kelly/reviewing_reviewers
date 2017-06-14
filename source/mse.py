@@ -6,7 +6,8 @@ import pandas as pd
 
 
 def autolabel(rects, ax):
-    # Get y-axis height to calculate label position from.
+    """Thanks Stack Overflow!: Get y-axis height to calculate label position"""
+    
     (y_bottom, y_top) = ax.get_ylim()
     y_height = y_top - y_bottom
 
@@ -38,10 +39,10 @@ def plot_MSE(reader, mse, figure):
 
 	series = pd.Series.from_array(mse)
 
-	# now to plot the figure...
+	#From Stack Overflow
 	plt.figure(figure, figsize=(12, 8))
 	ax = series.plot(kind='bar')
-	ax.set_title("Mean Squared Error per Critic")
+	ax.set_title("Mean Squared Error per Publication")
 	ax.set_xlabel("Publications")
 	ax.set_ylabel("Mean Squared Error")
 	ax.set_xticklabels(reviewers, rotation=30)
@@ -155,27 +156,34 @@ def main():
 
 		csv_file.seek(0)
 		IMDB_title_means = calculate_title_means(reader, 'IMDB')
-		print IMDB_title_means
 		csv_file.seek(0)
 		reviewer_title_means = calculate_title_means(reader, 'REVIEWER')
-		print reviewer_title_means
 		csv_file.seek(0)
+
+		number_of_titles = len(IMDB_title_means)
+		print "Number of titles = ", number_of_titles
+
+		#Error is the difference between the average of the reviewer ratings and the IMDB score
+		mse_reviewer_average = sum((np.array(IMDB_title_means)-np.array(reviewer_title_means))**2)/number_of_titles
+		print "MSE (IMDB - Reviewer Means) = ", mse_reviewer_average
+		
 		total_number_of_reviewers = calculate_total_number_of_reviewers(reader)
-		print total_number_of_reviewers
+		print "Total Number of Reviewers = ", total_number_of_reviewers
 		csv_file.seek(0)
 		total_number_of_reviews_per_reviewer = calculate_reviews_per_reviewer(reader, total_number_of_reviewers)
-		print total_number_of_reviews_per_reviewer
+		print "Total Number of Reviews per Reviewer = ", total_number_of_reviews_per_reviewer
+		print "Average Number of Reviews per Reviewer = ", float(sum(total_number_of_reviews_per_reviewer))/total_number_of_reviewers
 		csv_file.seek(0)
 		sse_IMDB = calculate_sse(reader, IMDB_title_means, total_number_of_reviewers)
-		print sse_IMDB
 		csv_file.seek(0)
 		sse_reviewer = calculate_sse(reader, reviewer_title_means, total_number_of_reviewers)
-		print sse_reviewer
 
+		#Error is the difference between each reviewer rating and the IMDB score
 		mse_IMDB = calculate_mse(sse_IMDB, total_number_of_reviews_per_reviewer)
-		print "MSE IMDB Means =", mse_IMDB
+		print "MSE (IMDB Means) =", mse_IMDB
+		#Error is the difference between each reviewer rating and the average of the reviewer ratings
 		mse_reviewer = calculate_mse(sse_reviewer, total_number_of_reviews_per_reviewer)
-		print "MSE Reviewer Means = ", mse_reviewer
+		print "MSE (Reviewer Means) = ", mse_reviewer
 
 		csv_file.seek(0)
 		plot_MSE(reader, mse_IMDB, 1)
